@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新加坡旅游行程规划</title>
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --light-bg: #f8f9fa;
+            --dark-text: #202124;
+            --light-text: #5f6368;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* 爱心动画样式 */
+        .heart {
+            position: absolute;
+            pointer-events: none;
+            animation: fly 4s linear forwards;
+            font-size: 24px;
+            color: #e91e63;
+            z-index: 9999;
+        }
+        
+        @keyframes fly {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--endX), var(--endY)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* 登录页面样式 */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-box {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            width: 350px;
+            text-align: center;
+            animation: fadeInUp 0.8s;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-title {
+            color: #e91e63;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        
+        .login-form input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .login-form input:focus {
+            border-color: #e91e63;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.2);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .login-btn:hover {
+            background-color: #c2185b;
+            transform: translateY(-2px);
+        }
+        
+        .error-message {
+            color: #f44336;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        /* 旅游行程页面样式 */
+        .travel-container {
+            display: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .date-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            list-style: none;
+            padding: 0;
+            margin: 30px 0;
+        }
+        
+        .date-list li a {
+            display: block;
+            padding: 15px;
+            background-color: white;
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border: 2px solid transparent;
+        }
+        
+        .date-list li a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .date-list li a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .date-page {
+            display: none;
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .date-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .date-title {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            padding: 8px 20px;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .back-link:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .activity-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .activity-item {
+            padding: 20px;
+            margin-bottom: 15px;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-color);
+        }
+        
+        .activity-time {
+            font-weight: 600;
+            color: var(--primary-color);
+            min-width: 80px;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-text);
+        }
+        
+        .activity-desc {
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
+        .activity-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .activity-link:hover {
+            text-decoration: underline;
+        }
+        
+        .activity-link::after {
+            content: "→";
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+        
+        .activity-link:hover::after {
+            transform: translateX(3px);
+        }
+        
+        .map-container {
+            margin-top: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-placeholder {
+            height: 300px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light-text);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-top: 50px;
+        }
+        
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background-color: #c62828;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .date-list {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .activity-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .activity-time {
+                margin-bottom: 10px;
+            }
+            
+            .login-box {
+                width: 90%;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div class="login-container" id="loginPage">
+        <div class="login-box">
+            <h1 class="login-title">欢迎来到新加坡旅游规划</h1>
+            <form class="login-form" id="loginForm">
+                <input type="text" id="username" placeholder="用户名" required>
+                <input type="password" id="password" placeholder="密码" required>
+                <button type="button" class="login-btn" onclick="login()">登录</button>
+                <div id="errorMessage" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 旅游行程页面 -->
+    <div class="travel-container" id="travelPage">
+        <button class="logout-btn" onclick="logout()">退出登录</button>
+        
+        <header>
+            <div class="container">
+                <h1>新加坡旅游行程规划</h1>
+                <div class="subtitle">2023年8月7日-8月13日 · 7天6夜精彩行程</div>
+            </div>
+        </header>
+        
+        <div class="container">
+            <div id="home">
+                <h2>选择日期查看详细行程</h2>
+                <ul class="date-list">
+                    <li><a href="#" onclick="showDate('2023-08-07')" class="active">8月7日</a></li>
+                    <li><a href="#" onclick="showDate('2023-08-08')">8月8日</a></li>
+                    <li><a href="#" onclick="showDate('2023-08-09')">8月9日</a></li>
+                    <li><a href="#" onclick="showDate('2023-08-10')">8月10日</a></li>
+                    <li><a href="#" onclick="showDate('2023-08-11')">8月11日</a></li>
+                    <li><a href="#" onclick="showDate('2023-08-12')">8月12日</a></li>
+                    <li><a href="#" onclick="showDate('2023-08-13')">8月13日</a></li>
+                </ul>
+            </div>
+
+            <!-- 8月7日行程 -->
+            <div id="2023-08-07" class="date-page">
+                <div class="date-header">
+                    <h2 class="date-title">8月7日行程</h2>
+                    <a href="#" onclick="goBack()" class="back-link">返回日期列表</a>
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-time">午餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">美世界吃饭</div>
+                            <a href="https://baike.baidu.com/item/%E7%BE%8E%E4%B8%96%E7%95%8C%E5%9C%B0%E9%93%81%E7%AB%99/6695236?fr=aladdin" class="activity-link" target="_blank">查看详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">住宿</div>
+                        <div class="activity-content">
+                            <div class="activity-title">269 Balstier Road旅馆</div>
+                            <a href="https://www.mafengwo.cn/hotel/83329.html" class="activity-link" target="_blank">查看酒店信息</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">下午</div>
+                        <div class="activity-content">
+                            <div class="activity-title">回学校</div>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">晚餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">辣爆天餐厅</div>
+                            <div class="activity-desc">联系电话: 129905</div>
+                            <a href="https://www.myfunnow.com/zh-tw/funbook/3369871965109/branch" class="activity-link" target="_blank">查看餐厅详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">景点</div>
+                        <div class="activity-content">
+                            <div class="activity-title">鱼尾狮公园</div>
+                            <div class="activity-desc">特色美食: 汉堡6元</div>
+                            <a href="https://baike.baidu.com/item/%E9%B1%BC%E5%B0%BE%E7%8B%AE/710346" class="activity-link" target="_blank">查看景点介绍</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">夜间</div>
+                        <div class="activity-content">
+                            <div class="activity-title">金沙商场赌场</div>
+                            <a href="https://baike.baidu.com/item/%E6%96%B0%E5%8A%A0%E5%9D%A1%E9%87%91%E6%B2%99%E5%A8%B1%E4%B9%90%E5%9F%8E/5722131?fr=aladdin" class="activity-link" target="_blank">查看详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">夜宵</div>
+                        <div class="activity-content">
+                            <div class="activity-title">芽笼9巷田鸡粥</div>
+                            <a href="https://www.baidu.com/s?pd=note&rpf=pc&word=%E8%8A%BD%E7%AC%BC9%E5%B7%B7%E7%94%B0%E9%B8%A1%E7%B2%A5&sa=vs_video_top_ugc" class="activity-link" target="_blank">查看美食推荐</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 8月8日行程 -->
+            <div id="2023-08-08" class="date-page">
+                <div class="date-header">
+                    <h2 class="date-title">8月8日行程</h2>
+                    <a href="#" onclick="goBack()" class="back-link">返回日期列表</a>
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-time">早餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">酒店旁边的食阁</div>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">住宿</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Hotel 218 Balestier</div>
+                            <a href="https://www.mafengwo.cn/hotel/83329.html" class="activity-link" target="_blank">查看酒店信息</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">上午</div>
+                        <div class="activity-content">
+                            <div class="activity-title">福康宁公园</div>
+                            <a href="https://gs.ctrip.com/html5/you/sight/singapore53/1710111.html" class="activity-link" target="_blank">查看景点介绍</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">午餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">鱼尾狮公园</div>
+                            <div class="activity-desc">特色美食: 汉堡6元</div>
+                            <a href="https://baike.baidu.com/item/%E9%B1%BC%E5%B0%BE%E7%8B%AE/710346" class="activity-link" target="_blank">查看景点介绍</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">下午</div>
+                        <div class="activity-content">
+                            <div class="activity-title">牛车水</div>
+                            <div class="activity-desc">特色美食: 榴莲</div>
+                            <a href="https://baike.baidu.com/item/%E7%89%9B%E8%BD%A6%E6%B0%B4/1878705" class="activity-link" target="_blank">查看景点介绍</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">晚餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">大胡子烧烤</div>
+                            <div class="activity-desc">联系电话: 058571</div>
+                            <a href="https://mbd.baidu.com/newspage/data/dtlandingsuper?nid=dt_4128801003559847467&sourceFrom=search_a" class="activity-link" target="_blank">查看餐厅详情</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 8月9日行程 -->
+            <div id="2023-08-09" class="date-page">
+                <div class="date-header">
+                    <h2 class="date-title">8月9日行程</h2>
+                    <a href="#" onclick="goBack()" class="back-link">返回日期列表</a>
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-time">上午</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Vivocity购物中心</div>
+                            <a href="https://baike.baidu.com/item/%E6%80%A1%E4%B8%B0%E5%9F%8E/6269300" class="activity-link" target="_blank">查看商场详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">午餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">大时代餐厅</div>
+                            <div class="activity-desc">特色美食: 肉骨茶、炒粥</div>
+                            <a href="https://mbd.baidu.com/newspage/data/dtlandingsuper?nid=dt_4279667330392608889&sourceFrom=search_a" class="activity-link" target="_blank">查看餐厅详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">下午</div>
+                        <div class="activity-content">
+                            <div class="activity-title">环球影城</div>
+                            <a href="https://baike.baidu.com/item/%E6%96%B0%E5%8A%A0%E5%9D%A1%E7%8E%AF%E7%90%83%E5%BD%B1%E5%9F%8E/9335373" class="activity-link" target="_blank">查看景点介绍</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">晚上</div>
+                        <div class="activity-content">
+                            <div class="activity-title">烟花秀</div>
+                            <div class="activity-desc">8点结束</div>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">夜宵</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Bugis junction的daily chicken</div>
+                            <div class="activity-desc">10点关门</div>
+                            <a href="https://mbd.baidu.com/newspage/data/dtlandingsuper?nid=dt_4354850316219944416&sourceFrom=search_a" class="activity-link" target="_blank">查看餐厅详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">饮品</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Mr coconut</div>
+                            <div class="activity-desc">9点45关门</div>
+                            <a href="https://mrcoconut.sg/" class="activity-link" target="_blank">查看店铺详情</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 8月10日行程 -->
+            <div id="2023-08-10" class="date-page">
+                <div class="date-header">
+                    <h2 class="date-title">8月10日行程</h2>
+                    <a href="#" onclick="goBack()" class="back-link">返回日期列表</a>
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-time">上午</div>
+                        <div class="activity-content">
+                            <div class="activity-title">从Hotel 218 Balestier前往新山(JB)</div>
+                            <a href="https://baike.baidu.com/item/%E6%96%B0%E5%B1%B1%E5%B8%82/65243602" class="activity-link" target="_blank">查看新山介绍</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">住宿</div>
+                        <div class="activity-content">
+                            <div class="activity-title">KingSton Hotel 7</div>
+                            <a href="https://hotels.ctrip.com/hotels/119703285.html" class="activity-link" target="_blank">查看酒店信息</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">饮品</div>
+                        <div class="activity-content">
+                            <div class="activity-title">霸王茶姬</div>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">午餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">华阳茶室</div>
+                            <a href="https://mbd.baidu.com/newspage/data/dtlandingsuper?nid=dt_4189021234038413096&sourceFrom=search_a" class="activity-link" target="_blank">查看餐厅详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">自由活动</div>
+                        <div class="activity-content">
+                            <div class="activity-title">逛街或者回酒店</div>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">晚餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">海底捞</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 8月11日行程 -->
+            <div id="2023-08-11" class="date-page">
+                <div class="date-header">
+                    <h2 class="date-title">8月11日行程</h2>
+                    <a href="#" onclick="goBack()" class="back-link">返回日期列表</a>
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-time">午餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">德兴纸包鸡</div>
+                            <a href="https://mbd.baidu.com/newspage/data/dtlandingsuper?nid=dt_5015973193436799018&sourceFrom=search_a" class="activity-link" target="_blank">查看餐厅详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">下午</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Mid Valley Southkey商场</div>
+                            <a href="https://mp.weixin.qq.com/s?__biz=MzI2ODk2ODg1Mw==&mid=2248220343&idx=6&sn=dd9667ee5386635bd37f7f883e86768c&chksm=e912c84dde65415b76d68a2c3f83985657f111558aca011ba4200b10b98a4e7fb605484943b8&scene=27" class="activity-link" target="_blank">查看商场详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">下午茶</div>
+                        <div class="activity-content">
+                            <div class="activity-title">JWC甜品店</div>
+                            <a href="https://mbd.baidu.com/newspage/data/dtlandingsuper?nid=dt_5056444734759091658" class="activity-link" target="_blank">查看店铺详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">晚餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">巨无霸啦啦堡</div>
+                            <a href="https://mbd.baidu.com/newspage/data/dtlandingsuper?nid=dt_4358279001700189632&sourceFrom=search_a" class="activity-link" target="_blank">查看餐厅详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">夜宵</div>
+                        <div class="activity-content">
+                            <div class="activity-title">麦当劳</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 8月12日行程 -->
+            <div id="2023-08-12" class="date-page">
+                <div class="date-header">
+                    <h2 class="date-title">8月12日行程</h2>
+                    <a href="#" onclick="goBack()" class="back-link">返回日期列表</a>
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-time">午餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">中午随便吃一点下午回新加坡</div>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">下午</div>
+                        <div class="activity-content">
+                            <div class="activity-title">乌节路East Coast Logoon娘惹面</div>
+                            <a href="https://www.foodadvisor.com.sg/restaurant/east-coast-lagoon-singapore-laksa-noodles-rasapura-masters-marina-bay-sands/#:~:text=Located%20in%20the%20iconic%20Marina%20Bay%20Sands%2C%20this,experience%20with%20its%20signature%20Singaporean%20laksa%20and%20noodles." class="activity-link" target="_blank">查看餐厅详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">傍晚</div>
+                        <div class="activity-content">
+                            <div class="activity-title">去酒店化妆</div>
+                            <a href="https://www.example.com/0812" class="activity-link" target="_blank">查看详情</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">景点</div>
+                        <div class="activity-content">
+                            <div class="activity-title">旧禧街警察局</div>
+                            <a href="https://baike.baidu.com/item/%E6%97%A7%E7%A6%A7%E8%A1%97%E8%AD%A6%E5%AF%9F%E5%B1%80/13005633" class="activity-link" target="_blank">查看景点介绍</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">景点</div>
+                        <div class="activity-content">
+                            <div class="activity-title">克拉码头</div>
+                            <a href="https://baike.baidu.com/item/%E5%85%8B%E6%8B%89%E7%A0%81%E5%A4%B4?fromModule=lemma_search-box" class="activity-link" target="_blank">查看景点介绍</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">晚餐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">069111食阁</div>
+                            <a href="https://www.bing.com/maps?q=069111+singapore&qs=UT&pq=069111&sc=2-6&cvid=2A0C6BAAB0EC4FDEA966E672D25486D2&FORM=QBRE&sp=1&lq=0" class="activity-link" target="_blank">查看位置</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">夜宵</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Maxwell food centre红毛榴莲汁</div>
+                            <a href="https://m.ctrip.com/webapp/you/community/detail?articleId=69229490" class="activity-link" target="_blank">查看美食推荐</a>
+                        </div>
+                    </li>
+                    
+                    <li class="activity-item">
+                        <div class="activity-time">夜间</div>
+                        <div class="activity-content">
+                            <div class="activity-title">摩天轮</div>
+                            <a href="https://www.singaporeflyer.com/en" class="activity-link" target="_blank">查看景点介绍</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 8月13日行程 -->
+            <div id="2023-08-13" class="date-page">
+                <div class="date-header">
+                    <h2 class="date-title">8月13日行程</h2>
+                    <a href="#" onclick="goBack()" class="back-link">返回日期列表</a>
+                </div>
+                
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-time">上午</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Jewel星耀樟宜</div>
+                            <a href="https://www.jewelchangiairport.com/zh.html" class="activity-link" target="_blank">查看景点介绍</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <footer>
+            <div class="container">
+                <p>© 2025新加坡旅游cmg行程规划</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 创建爱心动画
+        function createHearts(count = 10) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.innerHTML = '❤️';
+                    
+                    // 随机起始位置（屏幕边缘）
+                    const startX = Math.random() < 0.5 ? 
+                        -50 : window.innerWidth + 50;
+                    const startY = Math.random() * window.innerHeight;
+                    
+                    // 目标位置（屏幕中心附近）
+                    const endX = (window.innerWidth / 2 + (Math.random() - 0.5) * 200) - startX;
+                    const endY = (window.innerHeight / 2 + (Math.random() - 0.5) * 200) - startY;
+                    
+                    // 设置起始位置和动画变量
+                    heart.style.left = startX + 'px';
+                    heart.style.top = startY + 'px';
+                    heart.style.setProperty('--endX', endX + 'px');
+                    heart.style.setProperty('--endY', endY + 'px');
+                    
+                    // 随机大小
+                    heart.style.fontSize = (20 + Math.random() * 30) + 'px';
+                    
+                    // 随机颜色
+                    const colors = ['#e91e63', '#f44336', '#9c27b0', '#2196f3', '#4caf50'];
+                    heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    document.body.appendChild(heart);
+                    
+                    // 动画结束后移除元素
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 4000);
+                }, i * 100);
+            }
+        }
+        
+        // 登录功能
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (username === 'mengge' && password === '0821') {
+                // 登录成功，创建爱心动画
+                createHearts(30);
+                
+                // 延迟显示旅游页面
+                setTimeout(() => {
+                    document.getElementById('loginPage').style.display = 'none';
+                    document.getElementById('travelPage').style.display = 'block';
+                    
+                    // 显示第一天的内容
+                    showDate('2023-08-07');
+                    
+                    // 更新日期导航的active状态
+                    const dateLinks = document.querySelectorAll('.date-list a');
+                    dateLinks.forEach(link => {
+                        link.addEventListener('click', function() {
+                            dateLinks.forEach(l => l.classList.remove('active'));
+                            this.classList.add('active');
+                        });
+                    });
+                }, 1500);
+            } else {
+                errorMessage.innerText = '用户名或密码错误！';
+                createHearts(5); // 登录失败也显示一些爱心
+            }
+        }
+        
+        // 退出登录
+        function logout() {
+            document.getElementById('travelPage').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('errorMessage').innerText = '';
+            createHearts(20); // 退出时也显示爱心
+        }
+        
+        // 显示日期内容
+        function showDate(date) {
+            document.getElementById('home').style.display = 'none';
+            const pages = document.querySelectorAll('.date-page');
+            pages.forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(date).style.display = 'block';
+        }
+        
+        // 返回日期列表
+        function goBack() {
+            document.getElementById('home').style.display = 'block';
+            const pages = document.querySelectorAll('.date-page');
+            pages.forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // 重置active状态
+            const dateLinks = document.querySelectorAll('.date-list a');
+            dateLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector('.date-list a:first-child').classList.add('active');
+        }
+        
+        // 页面加载时创建一些爱心
+        window.onload = function() {
+            createHearts(15);
+            
+            // 每5秒自动创建一些爱心
+            setInterval(() => {
+                createHearts(5);
+            }, 5000);
+        };
+    </script>
+</body>
+</html>
